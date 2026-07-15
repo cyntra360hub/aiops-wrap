@@ -1,0 +1,87 @@
+[project]
+name = "aiops-wrap"
+version = "0.1.0"
+description = "Instrument any scripted agent with zero code changes: `aiops wrap -- <command>` reports each run to AiOps Enabler as a task event."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "AiOps Enabler" }]
+keywords = ["aiops", "agents", "observability", "cli", "instrumentation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: System :: Monitoring",
+]
+
+# `aiops-enabler` is the official Python SDK — reused here for HMAC
+# signing and the signed events/heartbeat calls rather than
+# re-implementing the signing scheme a second time in this repo.
+dependencies = [
+    "aiops-enabler>=0.2.0,<1.0",
+    "httpx>=0.27,<1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9.0",
+    "pytest-cov>=6.0,<7.0",
+]
+
+[project.scripts]
+aiops = "aiops_wrap.cli:main"
+
+[project.urls]
+Homepage = "https://aiopsenabler.com"
+Repository = "https://github.com/cyntra360hub/aiops-wrap"
+Issues = "https://github.com/cyntra360hub/aiops-wrap/issues"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+aiops_wrap = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.coverage.run]
+source = ["src/aiops_wrap"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4", "SIM", "RUF"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["aiops_wrap"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_ignores = true
+warn_return_any = true
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "conftest",
+    "test_cli",
+    "test_config",
+    "test_join",
+    "test_signing_vector",
+    "test_wrap",
+]
+disallow_untyped_defs = false
+warn_return_any = false
